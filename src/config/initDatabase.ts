@@ -19,8 +19,17 @@ export const initDatabase = async () => {
             CREATE TABLE IF NOT EXISTS pokemons (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
-                life_points INT NOT NULL,
-                trainer_id INT REFERENCES trainers(id)
+                life_points INT NOT NULL
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS trainer_pokemons (
+                id SERIAL PRIMARY KEY,
+                trainer_id INT NOT NULL REFERENCES trainers(id) ON DELETE CASCADE,
+                pokemon_id INT NOT NULL REFERENCES pokemons(id) ON DELETE CASCADE,
+                captured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(trainer_id, pokemon_id)
             );
         `);
 
@@ -35,6 +44,7 @@ export const initDatabase = async () => {
         `);
 
         await client.query('COMMIT');
+        console.log('✅ Database tables created successfully!');
     } catch (error) {
         await client.query('ROLLBACK');
         throw error;
@@ -42,3 +52,19 @@ export const initDatabase = async () => {
         client.release();
     }
 };
+
+// Si le fichier est exécuté directement
+if (require.main === module) {
+    import('dotenv').then(dotenv => {
+        dotenv.config();
+        initDatabase()
+            .then(() => {
+                console.log('✅ Done!');
+                process.exit(0);
+            })
+            .catch((error) => {
+                console.error('❌ Failed:', error);
+                process.exit(1);
+            });
+    });
+}

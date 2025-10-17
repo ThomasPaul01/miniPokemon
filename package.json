@@ -13,6 +13,8 @@
   },
   "scripts": {
     "start": "tsx src/app.ts",
-    "dev": "tsx watch src/app.ts"
+    "dev": "tsx watch src/app.ts",
+    "db:init": "tsx src/config/initDatabase.ts",
+    "db:fixtures": "tsx src/config/dataFixtures.ts"
   }
 }

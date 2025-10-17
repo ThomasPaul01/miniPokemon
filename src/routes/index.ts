@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express'
 import trainerRoutes from './trainerRoutes.ts';
+import pokemonRoutes from './pokemonRoutes.ts';
+import attackRoutes from './attackRoutes.ts';
 const app = express()
-const port = 3000
-
 
 app.use(express.json()); 
 app.use(logger);        
@@ -12,6 +12,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 app.use('/trainers', trainerRoutes);
+app.use('/pokemons', pokemonRoutes);
+app.use('/attacks', attackRoutes);
 
 function logger(req: Request, _res: Response, next: NextFunction) {
   console.log('\n--- headerLogger: request.headers ---');

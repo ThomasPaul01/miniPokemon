@@ -74,3 +74,5 @@ Chaque dresseur choisit son Pokémon avec le plus de PV, combat sans taverne.
 
 Arène 2 :
 100 combats déterministes consécutifs, arrêt si un dresseur perd tous ses Pokémon.
+
+fixtures: npm run db:fixtures
