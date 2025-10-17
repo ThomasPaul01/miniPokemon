@@ -1,6 +1,18 @@
 {
   "dependencies": {
-    "Express": "^3.0.1",
+    "@types/express": "^5.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "@types/pg": "^8.15.5",
+    "tsx": "^4.19.1"
+  },
+  "scripts": {
+    "start": "tsx src/app.ts",
+    "dev": "tsx watch src/app.ts"
   }
 }

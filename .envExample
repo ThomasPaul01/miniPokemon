@@ -1,0 +1,12 @@
+# Fichier .env
+
+# Configuration PostgreSQL
+PGHOST=localhost
+PGUSER=USER
+PGPASSWORD=PASSWORD
+PGDATABASE=DATABASENAME
+PGPORT=5432
+
+# (optionnel) Autres variables d'environnement
+NODE_ENV=development
+PORT=3000
