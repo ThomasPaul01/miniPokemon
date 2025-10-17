@@ -12,12 +12,12 @@ export const getAllAttacks = async () => {
     }
 };
 
-export const createAttack = async (name: string, damage: number, limitUse: number, pokemonId: number) => {
+export const createAttack = async (name: string, damage: number, limitUse: number) => {
     const client = await pool.connect();
     try {
         const result = await client.query(
-            'INSERT INTO attacks (name, damage, limit_use, pokemon_id) VALUES ($1, $2, $3, $4) RETURNING *',
-            [name, damage, limitUse, pokemonId]
+            'INSERT INTO attacks (name, damage, limit_use) VALUES ($1, $2, $3) RETURNING *',
+            [name, damage, limitUse]
         );
         return result.rows[0];
     } catch (error) {

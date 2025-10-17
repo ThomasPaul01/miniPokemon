@@ -7,7 +7,7 @@ export const loadFixtures = async () => {
 
         // Nettoyer les données existantes
         console.log('🧹 Cleaning existing data...');
-        await client.query('TRUNCATE TABLE attacks, trainer_pokemons, pokemons, trainers RESTART IDENTITY CASCADE');
+        await client.query('TRUNCATE TABLE pokemon_attacks, attacks, trainer_pokemons, pokemons, trainers RESTART IDENTITY CASCADE');
 
         // Créer des trainers
         console.log('👤 Creating trainers...');
@@ -64,52 +64,96 @@ export const loadFixtures = async () => {
         `);
         console.log('✅ Linked pokemons to trainers');
 
-        // Créer des attaques pour chaque pokémon
-        console.log('⚡ Creating attacks...');
+        // Créer des attaques (catalogue global)
+        console.log('⚡ Creating attacks catalog...');
         const attacksResult = await client.query(`
-            INSERT INTO attacks (name, damage, limit_use, pokemon_id) VALUES
-            -- Attaques de Pikachu (pokemon_id = 1)
-            ('Éclair', 40, 25, 1),
-            ('Tonnerre', 90, 15, 1),
-            ('Cage-Éclair', 20, 20, 1),
+            INSERT INTO attacks (name, damage, limit_use) VALUES
+            -- Attaques électriques
+            ('Éclair', 40, 25),
+            ('Tonnerre', 90, 15),
+            ('Cage-Éclair', 20, 20),
             
-            -- Attaques de Bulbizarre (pokemon_id = 2)
-            ('Fouet Lianes', 45, 25, 2),
-            ('Lance-Soleil', 120, 10, 2),
-            ('Poudre Toxik', 30, 35, 2),
+            -- Attaques plante
+            ('Fouet Lianes', 45, 25),
+            ('Lance-Soleil', 120, 10),
+            ('Poudre Toxik', 30, 35),
             
-            -- Attaques de Salamèche (pokemon_id = 3)
-            ('Flammèche', 40, 25, 3),
-            ('Lance-Flammes', 90, 15, 3),
-            ('Crocs Feu', 65, 15, 3),
+            -- Attaques feu
+            ('Flammèche', 40, 25),
+            ('Lance-Flammes', 90, 15),
+            ('Crocs Feu', 65, 15),
+            ('Déflagration', 110, 5),
             
-            -- Attaques de Carapuce (pokemon_id = 4)
-            ('Pistolet à O', 40, 25, 4),
-            ('Hydrocanon', 110, 5, 4),
-            ('Morsure', 60, 25, 4),
+            -- Attaques eau
+            ('Pistolet à O', 40, 25),
+            ('Hydrocanon', 110, 5),
             
-            -- Attaques de Mewtwo (pokemon_id = 8)
-            ('Psyko', 90, 10, 8),
-            ('Déflagration', 110, 5, 8),
-            ('Fatal-Foudre', 110, 5, 8),
+            -- Attaques normales
+            ('Morsure', 60, 25),
+            ('Plaquage', 85, 15),
+            ('Charge', 40, 35),
             
-            -- Attaques de Dracaufeu (pokemon_id = 9)
-            ('Dracochoc', 85, 10, 9),
-            ('Déflagration', 110, 5, 9),
-            ('Vol', 90, 15, 9),
+            -- Attaques psy
+            ('Psyko', 90, 10),
+            ('Fatal-Foudre', 110, 5),
             
-            -- Attaques de Ronflex (pokemon_id = 12)
-            ('Plaquage', 85, 15, 12),
-            ('Repos', 0, 10, 12),
-            ('Ronflement', 50, 15, 12),
+            -- Attaques dragon/vol
+            ('Dracochoc', 85, 10),
+            ('Vol', 90, 15),
             
-            -- Attaques de Magicarpe (pokemon_id = 14)
-            ('Trempette', 0, 40, 14),
-            ('Charge', 40, 35, 14)
+            -- Attaques spéciales
+            ('Repos', 0, 10),
+            ('Ronflement', 50, 15),
+            ('Trempette', 0, 40)
             
             RETURNING id, name
         `);
         console.log(`✅ Created ${attacksResult.rows.length} attacks`);
+        
+        // Associer les attaques aux pokémons via pokemon_attacks
+        console.log('🎯 Teaching attacks to pokemons...');
+        await client.query(`
+            INSERT INTO pokemon_attacks (pokemon_id, attack_id, remaining_uses) VALUES
+            -- Pikachu (pokemon_id = 1) apprend 3 attaques électriques
+            (1, 1, 25),  -- Éclair
+            (1, 2, 15),  -- Tonnerre
+            (1, 3, 20),  -- Cage-Éclair
+            
+            -- Bulbizarre (pokemon_id = 2) apprend 3 attaques plante
+            (2, 4, 25),  -- Fouet Lianes
+            (2, 5, 10),  -- Lance-Soleil
+            (2, 6, 35),  -- Poudre Toxik
+            
+            -- Salamèche (pokemon_id = 3) apprend 3 attaques feu
+            (3, 7, 25),  -- Flammèche
+            (3, 8, 15),  -- Lance-Flammes
+            (3, 9, 15),  -- Crocs Feu
+            
+            -- Carapuce (pokemon_id = 4) apprend 3 attaques eau/normal
+            (4, 11, 25), -- Pistolet à O
+            (4, 12, 5),  -- Hydrocanon
+            (4, 13, 25), -- Morsure
+            
+            -- Mewtwo (pokemon_id = 8) apprend 3 attaques puissantes
+            (8, 16, 10), -- Psyko
+            (8, 10, 5),  -- Déflagration
+            (8, 17, 5),  -- Fatal-Foudre
+            
+            -- Dracaufeu (pokemon_id = 9) apprend 3 attaques feu/vol
+            (9, 18, 10), -- Dracochoc
+            (9, 10, 5),  -- Déflagration
+            (9, 19, 15), -- Vol
+            
+            -- Ronflex (pokemon_id = 12) apprend 3 attaques
+            (12, 14, 15), -- Plaquage
+            (12, 20, 10), -- Repos
+            (12, 21, 15), -- Ronflement
+            
+            -- Magicarpe (pokemon_id = 14) apprend 2 attaques
+            (14, 22, 40), -- Trempette
+            (14, 15, 35)  -- Charge
+        `);
+        console.log('✅ Taught attacks to pokemons');
 
         await client.query('COMMIT');
         

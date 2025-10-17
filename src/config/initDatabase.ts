@@ -38,8 +38,18 @@ export const initDatabase = async () => {
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 damage INT NOT NULL,
-                limit_use INT NOT NULL,
-                pokemon_id INT REFERENCES pokemons(id)
+                limit_use INT NOT NULL
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS pokemon_attacks (
+                id SERIAL PRIMARY KEY,
+                pokemon_id INT NOT NULL REFERENCES pokemons(id) ON DELETE CASCADE,
+                attack_id INT NOT NULL REFERENCES attacks(id) ON DELETE CASCADE,
+                remaining_uses INT NOT NULL,
+                learned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(pokemon_id, attack_id)
             );
         `);
 

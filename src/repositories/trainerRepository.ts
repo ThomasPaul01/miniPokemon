@@ -24,6 +24,8 @@ export const createTrainer = async (name: string, level: number, experience: num
         client.release();
     }
 };
+
+//addPokemon pas encore fonctionnel
 export const addPokemonToTrainer = async (trainerId: number, pokemonId: number) => {
     const client = await pool.connect();
     try {

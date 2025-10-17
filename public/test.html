@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test complet Endpoints miniPokemon</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    form { margin-bottom: 2em; padding: 1em; border: 1px solid #ccc; }
+    label { display: block; margin-top: 0.5em; }
+    input, button { margin-top: 0.2em; }
+    .result { margin-top: 1em; background: #f8f8f8; padding: 1em; border-radius: 4px; }
+    h2 { margin-bottom: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Test complet des Endpoints miniPokemon</h1>
+
+  <!-- Trainer Endpoints -->
+  <form id="getAllTrainersForm">
+    <h2>Liste des Trainers</h2>
+    <button type="submit">Afficher</button>
+    <div class="result" id="getAllTrainersResult"></div>
+  </form>
+
+  <form id="createTrainerForm">
+    <h2>Créer un Trainer</h2>
+    <label>Nom <input type="text" name="name" required></label>
+    <label>Niveau <input type="number" name="level" required></label>
+    <label>Expérience <input type="number" name="experience" required></label>
+    <button type="submit">Créer</button>
+    <div class="result" id="createTrainerResult"></div>
+  </form>
+
+  <form id="addPokemonToTrainerForm">
+    <h2>Ajouter un Pokémon à un Trainer</h2>
+    <label>trainerId <input type="number" name="trainerId" required></label>
+    <label>pokemonId <input type="number" name="pokemonId" required></label>
+    <button type="submit">Ajouter</button>
+    <div class="result" id="addPokemonToTrainerResult"></div>
+  </form>
+
+  <!-- Pokemon Endpoints -->
+  <form id="getAllPokemonsForm">
+    <h2>Liste de tous les Pokémons</h2>
+    <button type="submit">Afficher</button>
+    <div class="result" id="getAllPokemonsResult"></div>
+  </form>
+
+  <form id="createPokemonForm">
+    <h2>Créer un Pokémon</h2>
+    <label>Nom <input type="text" name="name" required></label>
+    <label>Points de vie <input type="number" name="lifePoints" required></label>
+    <label>trainerId <input type="number" name="trainerId" required></label>
+    <button type="submit">Créer</button>
+    <div class="result" id="createPokemonResult"></div>
+  </form>
+
+  <form id="getAllPokemonsForTrainerForm">
+    <h2>Pokémons d'un Trainer</h2>
+    <label>trainerId <input type="number" name="trainerId" required></label>
+    <button type="submit">Afficher</button>
+    <div class="result" id="getAllPokemonsForTrainerResult"></div>
+  </form>
+
+  <form id="learnAttackForm">
+    <h2>Apprendre une attaque</h2>
+    <label>pokemonId <input type="number" name="pokemonId" required></label>
+    <label>attackId <input type="number" name="attackId" required></label>
+    <label>limitUse <input type="number" name="limitUse" required></label>
+    <button type="submit">Apprendre</button>
+    <div class="result" id="learnAttackResult"></div>
+  </form>
+
+  <form id="healForm">
+    <h2>Soigner un Pokémon</h2>
+    <label>pokemonId <input type="number" name="pokemonId" required></label>
+    <button type="submit">Soigner</button>
+    <div class="result" id="healResult"></div>
+  </form>
+
+  <form id="attackForm">
+    <h2>Attaquer un autre Pokémon</h2>
+    <label>Attaquant (pokemonId) <input type="number" name="attackerId" required></label>
+    <label>Défenseur (pokemonId) <input type="number" name="defenderId" required></label>
+    <button type="submit">Attaquer</button>
+    <div class="result" id="attackResult"></div>
+  </form>
+
+  <!-- Attack Endpoints -->
+  <form id="getAllAttacksForm">
+    <h2>Liste des Attaques</h2>
+    <button type="submit">Afficher</button>
+    <div class="result" id="getAllAttacksResult"></div>
+  </form>
+
+  <form id="createAttackForm">
+    <h2>Créer une Attaque</h2>
+    <label>Nom <input type="text" name="name" required></label>
+    <label>Dégâts <input type="number" name="damage" required></label>
+    <label>Limite d'utilisation <input type="number" name="limitUse" required></label>
+    <button type="submit">Créer</button>
+    <div class="result" id="createAttackResult"></div>
+  </form>
+
+  <script>
+    async function post(url, data) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      let json;
+      try { json = await res.json(); } catch { json = await res.text(); }
+      return json;
+    }
+    async function get(url) {
+      const res = await fetch(url);
+      let json;
+      try { json = await res.json(); } catch { json = await res.text(); }
+      return json;
+    }
+    // Trainer
+    document.getElementById('getAllTrainersForm').onsubmit = async e => {
+      e.preventDefault();
+      const result = await get('/trainers/getAll');
+      document.getElementById('getAllTrainersResult').textContent = formatResult(result);
+    };
+    document.getElementById('createTrainerForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        level: form.level.value,
+        experience: form.experience.value
+      };
+      const result = await post('/trainers/create', data);
+      document.getElementById('createTrainerResult').textContent = formatResult(result);
+    };
+    document.getElementById('addPokemonToTrainerForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        trainerId: form.trainerId.value,
+        pokemonId: form.pokemonId.value
+      };
+      const result = await post('/trainers/addPokemon', data);
+      document.getElementById('addPokemonToTrainerResult').textContent = formatResult(result);
+    };
+    // Pokemon
+    document.getElementById('getAllPokemonsForm').onsubmit = async e => {
+      e.preventDefault();
+      const result = await get('/pokemons/getAll');
+      document.getElementById('getAllPokemonsResult').textContent = formatResult(result);
+    };
+    document.getElementById('createPokemonForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        lifePoints: form.lifePoints.value,
+        trainerId: form.trainerId.value
+      };
+      const result = await post('/pokemons/create', data);
+      document.getElementById('createPokemonResult').textContent = formatResult(result);
+    };
+    document.getElementById('getAllPokemonsForTrainerForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = { trainerId: form.trainerId.value };
+      const result = await post('/pokemons/getAll/' + form.trainerId.value, data);
+      document.getElementById('getAllPokemonsForTrainerResult').textContent = formatResult(result);
+    };
+    document.getElementById('learnAttackForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        pokemonId: form.pokemonId.value,
+        attackId: form.attackId.value,
+        limitUse: form.limitUse.value
+      };
+      const result = await post('/pokemons/learnAttack', data);
+      document.getElementById('learnAttackResult').textContent = formatResult(result);
+    };
+    document.getElementById('healForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = { pokemonId: form.pokemonId.value };
+      const result = await post('/pokemons/heal', data);
+      document.getElementById('healResult').textContent = formatResult(result);
+    };
+    document.getElementById('attackForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        attackerId: form.attackerId.value,
+        defenderId: form.defenderId.value
+      };
+      const result = await post('/pokemons/attack', data);
+      document.getElementById('attackResult').textContent = formatResult(result);
+    };
+    // Attack
+    document.getElementById('getAllAttacksForm').onsubmit = async e => {
+      e.preventDefault();
+      const result = await get('/attacks/getAll');
+      document.getElementById('getAllAttacksResult').textContent = formatResult(result);
+    };
+    document.getElementById('createAttackForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        damage: form.damage.value,
+        limitUse: form.limitUse.value
+      };
+      const result = await post('/attacks/create', data);
+      document.getElementById('createAttackResult').textContent = formatResult(result);
+    };
+    // Format result for clarity
+    function formatResult(result) {
+      if (typeof result === 'string') return result;
+      if (result.error) return 'Erreur : ' + result.error;
+      if (Array.isArray(result)) return result.map(formatObject).join('\n---\n');
+      return formatObject(result);
+    }
+    function formatObject(obj) {
+      if (!obj || typeof obj !== 'object') return String(obj);
+      return Object.entries(obj).map(([k, v]) => `${k} : ${JSON.stringify(v)}`).join('\n');
+    }
+  </script>
+</body>
+</html>

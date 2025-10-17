@@ -2,10 +2,16 @@ import express, { Request, Response, NextFunction } from 'express'
 import trainerRoutes from './trainerRoutes.ts';
 import pokemonRoutes from './pokemonRoutes.ts';
 import attackRoutes from './attackRoutes.ts';
+
+const path = require('path');
 const app = express()
 
+
 app.use(express.json()); 
-app.use(logger);        
+app.use(logger);
+
+// Expose public folder for static files
+app.use('/public', express.static(path.join(__dirname, '../../public')));
 
 // Routes
 app.get('/', (req, res) => {
