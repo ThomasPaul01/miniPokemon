@@ -10,16 +10,20 @@ export const getAllPokemons = async (req: Request, res: Response) => {
     }
 };
 export const createPokemon = async (req: Request, res: Response) => {
-    const { name, lifePoints, trainerId } = req.body;
+    const { name, lifePoints } = req.body;
     try {
-        const newPokemon = await createNewPokemon(name, lifePoints, trainerId);
+        const newPokemon = await createNewPokemon(name, lifePoints);
         res.status(201).json(newPokemon);
     } catch (error) {
         res.status(500).json({ error: "Failed to create pokemon" });
     }
 };
+
 export const getAllPokemonsForTrainer = async (req: Request, res: Response) => {
-    const { trainerId } = req.body;
+    const trainerId = Number(req.params.trainerId);
+    if (!trainerId) {
+        return res.status(400).json({ error: "trainerId param is required" });
+    }
     try {
         const pokemons = await getPokemonsForTrainer(trainerId);
         res.status(200).json(pokemons);

@@ -4,8 +4,8 @@ export const listAllPokemons = async () => {
     return await getAllPokemons();
 }
 
-export const createNewPokemon = async (name: string, lifePoints: number, trainerId: number) => {
-    return await createPokemon(name, lifePoints, trainerId);
+export const createNewPokemon = async (name: string, lifePoints: number) => {
+    return await createPokemon(name, lifePoints);
 }
 
 export const getPokemonsForTrainer = async (trainerId: number) => {

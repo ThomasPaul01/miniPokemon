@@ -28,7 +28,7 @@ export const getPokemonsByTrainerId = async (trainerId: number) => {
     const client = await pool.connect();
     try {
         const result = await client.query(
-            `SELECT p.*, tp.captured_at
+            `SELECT p.*
              FROM pokemons p
              INNER JOIN trainer_pokemons tp ON p.id = tp.pokemon_id
              WHERE tp.trainer_id = $1
