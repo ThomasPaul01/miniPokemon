@@ -20,7 +20,7 @@ export const getAllTrainers = async (req: Request, res: Response) => {
 export const addPokemonToTrainer = async (req: Request, res: Response) => {
     const { trainerId, pokemonId } = req.body;
     try {
-        const result = await addPokemonToTrainer(trainerId, pokemonId);
+        const result = await addNewPokemonToTrainer(trainerId, pokemonId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: "Failed to add Pokemon to trainer" });

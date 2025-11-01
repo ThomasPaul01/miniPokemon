@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>miniPokemon - Listes</title>
+  <link rel="stylesheet" href="/public/style.css">
+  <script type="module">
+    import { get, $, renderTable } from '/public/js/api.js';
+    window.addEventListener('DOMContentLoaded', () => {
+      $('#btnTrainers').onclick = async () => {
+        const res = await get('/trainers/getAll');
+        $('#resTrainers').innerHTML = Array.isArray(res) ? renderTable(res) : '<pre>'+res+'</pre>';
+      };
+      $('#btnPokemons').onclick = async () => {
+        const res = await get('/pokemons/getAll');
+        $('#resPokemons').innerHTML = Array.isArray(res) ? renderTable(res) : '<pre>'+res+'</pre>';
+      };
+      $('#btnAttacks').onclick = async () => {
+        const res = await get('/attacks/getAll');
+        $('#resAttacks').innerHTML = Array.isArray(res) ? renderTable(res) : '<pre>'+res+'</pre>';
+      };
+      $('#formByTrainer').onsubmit = async (e) => {
+        e.preventDefault();
+        const id = $('#inpTrainerId').value;
+        const res = await get('/pokemons/getAll/' + id);
+        $('#resByTrainer').innerHTML = Array.isArray(res) ? renderTable(res) : '<pre>'+res+'</pre>';
+      };
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <button onclick="location.href='/public/index.html'">Accueil</button>
+    <button onclick="location.href='/public/create.html'">Ajouts</button>
+    <button onclick="location.href='/public/tavern.html'">Taverne</button>
+    <button onclick="location.href='/public/combat.html'">Combat</button>
+  </nav>
+  <h1>Listes</h1>
+
+  <div class="card">
+    <h2>Trainers</h2>
+    <button id="btnTrainers">Charger</button>
+    <div class="result" id="resTrainers"></div>
+  </div>
+
+  <div class="card">
+    <h2>Pokémons</h2>
+    <button id="btnPokemons">Charger</button>
+    <div class="result" id="resPokemons"></div>
+  </div>
+
+  <div class="card">
+    <h2>Pokémons d'un trainer</h2>
+    <form id="formByTrainer">
+      <label>trainerId <input type="number" id="inpTrainerId" required></label>
+      <button type="submit">Charger</button>
+    </form>
+    <div class="result" id="resByTrainer"></div>
+  </div>
+
+  <div class="card">
+    <h2>Attaques</h2>
+    <button id="btnAttacks">Charger</button>
+    <div class="result" id="resAttacks"></div>
+  </div>
+</body>
+</html>

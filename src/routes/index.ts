@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express'
 import trainerRoutes from './trainerRoutes.ts';
 import pokemonRoutes from './pokemonRoutes.ts';
 import attackRoutes from './attackRoutes.ts';
+import challengeRoutes from './challengeRoutes.ts';
+import tavernRoutes from './tavernRoutes.ts';
 
 const path = require('path');
 const app = express()
@@ -20,6 +22,8 @@ app.get('/', (req, res) => {
 app.use('/trainers', trainerRoutes);
 app.use('/pokemons', pokemonRoutes);
 app.use('/attacks', attackRoutes);
+app.use('/challenge', challengeRoutes);
+app.use('/tavern', tavernRoutes);
 
 function logger(req: Request, _res: Response, next: NextFunction) {
   console.log('\n--- headerLogger: request.headers ---');

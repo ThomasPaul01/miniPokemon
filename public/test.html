@@ -10,6 +10,11 @@
     input, button { margin-top: 0.2em; }
     .result { margin-top: 1em; background: #f8f8f8; padding: 1em; border-radius: 4px; }
     h2 { margin-bottom: 0.5em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.5em; }
+    th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+    th { background: #fafafa; }
+    .hp-bar { height: 10px; background: #ddd; border-radius: 4px; overflow: hidden; }
+    .hp-fill { height: 100%; background: #4caf50; }
   </style>
 </head>
 <body>
@@ -86,11 +91,28 @@
     <div class="result" id="attackResult"></div>
   </form>
 
+  <!-- Challenge: Random Duel -->
+  <form id="challengeForm">
+    <h2>Défi aléatoire (Duel)</h2>
+    <label>trainer1Id <input type="number" name="trainer1Id" required></label>
+    <label>trainer2Id <input type="number" name="trainer2Id" required></label>
+    <button type="submit">Lancer le duel</button>
+    <div class="result" id="challengeResult"></div>
+  </form>
+
   <!-- Attack Endpoints -->
   <form id="getAllAttacksForm">
     <h2>Liste des Attaques</h2>
     <button type="submit">Afficher</button>
     <div class="result" id="getAllAttacksResult"></div>
+  </form>
+
+  <!-- Tavern -->
+  <form id="tavernHealForm">
+    <h2>Taverne — Soigner tous les Pokémons d'un Trainer</h2>
+    <label>trainerId <input type="number" name="trainerId" required></label>
+    <button type="submit">Soigner tout le monde</button>
+    <div class="result" id="tavernHealResult"></div>
   </form>
 
   <form id="createAttackForm">
@@ -166,8 +188,7 @@
     document.getElementById('getAllPokemonsForTrainerForm').onsubmit = async e => {
       e.preventDefault();
       const form = e.target;
-      const data = { trainerId: form.trainerId.value };
-      const result = await post('/pokemons/getAll/' + form.trainerId.value, data);
+      const result = await get('/pokemons/getAll/' + form.trainerId.value);
       document.getElementById('getAllPokemonsForTrainerResult').textContent = formatResult(result);
     };
     document.getElementById('learnAttackForm').onsubmit = async e => {
@@ -198,6 +219,17 @@
       const result = await post('/pokemons/attack', data);
       document.getElementById('attackResult').textContent = formatResult(result);
     };
+    // Challenge
+    document.getElementById('challengeForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        trainer1Id: form.trainer1Id.value,
+        trainer2Id: form.trainer2Id.value
+      };
+      const result = await post('/challenge/duel', data);
+      document.getElementById('challengeResult').innerHTML = renderBattle(result);
+    };
     // Attack
     document.getElementById('getAllAttacksForm').onsubmit = async e => {
       e.preventDefault();
@@ -215,6 +247,22 @@
       const result = await post('/attacks/create', data);
       document.getElementById('createAttackResult').textContent = formatResult(result);
     };
+    // Tavern
+    document.getElementById('tavernHealForm').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = { trainerId: form.trainerId.value };
+      const result = await post('/tavern/heal', data);
+      if (result.error) {
+        document.getElementById('tavernHealResult').textContent = 'Erreur : ' + result.error;
+      } else {
+        const lines = [
+          `Trainer ${result.trainerId} — ${result.count} pokémon(s) soignés`,
+          ...result.pokemons.map(p => `#${p.id} ${p.name} : ${p.healed ? 'OK' : 'KO'}`)
+        ];
+        document.getElementById('tavernHealResult').textContent = lines.join('\n');
+      }
+    };
     // Format result for clarity
     function formatResult(result) {
       if (typeof result === 'string') return result;
@@ -225,6 +273,51 @@
     function formatObject(obj) {
       if (!obj || typeof obj !== 'object') return String(obj);
       return Object.entries(obj).map(([k, v]) => `${k} : ${JSON.stringify(v)}`).join('\n');
+    }
+    function renderBattle(result) {
+      if (result.error) return `<div style="color:#c00;">Erreur : ${result.error}</div>`;
+      const hpBar = (pv) => {
+        const pct = Math.max(0, Math.min(100, Number(pv)));
+        return `<div class="hp-bar"><div class="hp-fill" style="width:${pct}%;"></div></div>`;
+      };
+      const header = `
+        <div>
+          <div><strong>Trainer 1:</strong> ${result.trainer1Id} — <strong>Pokémon:</strong> ${result.pokemon1Name} (#${result.pokemon1Id})</div>
+          <div><strong>Trainer 2:</strong> ${result.trainer2Id} — <strong>Pokémon:</strong> ${result.pokemon2Name} (#${result.pokemon2Id})</div>
+          <div style="margin-top:6px;"><strong>Gagnant:</strong> Trainer ${result.winnerTrainerId} — ${result.winnerPokemonName} (#${result.winnerPokemonId})</div>
+        </div>
+      `;
+      const rows = (result.log || []).map(t => `
+        <tr>
+          <td>${t.turn}</td>
+          <td>${t.attackerName} (#${t.attackerId})</td>
+          <td>${t.defenderName} (#${t.defenderId})</td>
+          <td>${t.attackName} (#${t.attackId})</td>
+          <td>${t.damage}</td>
+          <td>
+            ${t.defenderLifeAfter}
+            ${hpBar(t.defenderLifeAfter)}
+          </td>
+        </tr>
+      `).join('');
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Tour</th>
+              <th>Attaquant</th>
+              <th>Défenseur</th>
+              <th>Attaque</th>
+              <th>Dégâts</th>
+              <th>PV Défenseur</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      `;
+      return header + table;
     }
   </script>
 </body>

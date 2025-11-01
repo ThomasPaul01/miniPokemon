@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>miniPokemon - Ajouts</title>
+  <link rel="stylesheet" href="/public/style.css">
+  <script type="module">
+    import { post, $, formatResult } from '/public/js/api.js';
+    window.addEventListener('DOMContentLoaded', () => {
+      // Create trainer
+      $('#formCreateTrainer').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          name: $('#ct_name').value,
+          level: Number($('#ct_level').value),
+          experience: Number($('#ct_experience').value)
+        };
+        const res = await post('/trainers/create', data);
+        $('#resCreateTrainer').textContent = formatResult(res);
+      };
+      // Create pokemon (no trainerId here)
+      $('#formCreatePokemon').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          name: $('#cp_name').value,
+          lifePoints: Number($('#cp_life').value)
+        };
+        const res = await post('/pokemons/create', data);
+        $('#resCreatePokemon').textContent = formatResult(res);
+      };
+      // Add pokemon to trainer
+      $('#formAddPokemon').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          trainerId: Number($('#ap_trainer').value),
+          pokemonId: Number($('#ap_pokemon').value)
+        };
+        const res = await post('/trainers/addPokemon', data);
+        $('#resAddPokemon').textContent = formatResult(res);
+      };
+      // Create attack
+      $('#formCreateAttack').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          name: $('#ca_name').value,
+          damage: Number($('#ca_damage').value),
+          limitUse: Number($('#ca_limit').value)
+        };
+        const res = await post('/attacks/create', data);
+        $('#resCreateAttack').textContent = formatResult(res);
+      };
+      // Teach attack to pokemon
+      $('#formTeachAttack').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          pokemonId: Number($('#ta_pokemon').value),
+          attackId: Number($('#ta_attack').value),
+          limitUse: Number($('#ta_limit').value)
+        };
+        const res = await post('/pokemons/learnAttack', data);
+        $('#resTeachAttack').textContent = formatResult(res);
+      };
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <button onclick="location.href='/public/index.html'">Accueil</button>
+    <button onclick="location.href='/public/lists.html'">Listes</button>
+    <button onclick="location.href='/public/tavern.html'">Taverne</button>
+    <button onclick="location.href='/public/combat.html'">Combat</button>
+  </nav>
+  <h1>Ajouts</h1>
+
+  <div class="card">
+    <h2>Créer un Trainer</h2>
+    <form id="formCreateTrainer">
+      <label>Nom <input id="ct_name" required></label>
+      <label>Niveau <input id="ct_level" type="number" required></label>
+      <label>Expérience <input id="ct_experience" type="number" required></label>
+      <button type="submit">Créer</button>
+    </form>
+    <div class="result" id="resCreateTrainer"></div>
+  </div>
+
+  <div class="card">
+    <h2>Créer un Pokémon</h2>
+    <form id="formCreatePokemon">
+      <label>Nom <input id="cp_name" required></label>
+      <label>Points de vie <input id="cp_life" type="number" required></label>
+      <button type="submit">Créer</button>
+    </form>
+    <div class="result" id="resCreatePokemon"></div>
+  </div>
+
+  <div class="card">
+    <h2>Associer un Pokémon à un Trainer</h2>
+    <form id="formAddPokemon">
+      <label>trainerId <input id="ap_trainer" type="number" required></label>
+      <label>pokemonId <input id="ap_pokemon" type="number" required></label>
+      <button type="submit">Ajouter</button>
+    </form>
+    <div class="result" id="resAddPokemon"></div>
+  </div>
+
+  <div class="card">
+    <h2>Créer une Attaque</h2>
+    <form id="formCreateAttack">
+      <label>Nom <input id="ca_name" required></label>
+      <label>Dégâts <input id="ca_damage" type="number" required></label>
+      <label>Limite d'utilisation <input id="ca_limit" type="number" required></label>
+      <button type="submit">Créer</button>
+    </form>
+    <div class="result" id="resCreateAttack"></div>
+  </div>
+
+  <div class="card">
+    <h2>Apprendre une Attaque à un Pokémon</h2>
+    <form id="formTeachAttack">
+      <label>pokemonId <input id="ta_pokemon" type="number" required></label>
+      <label>attackId <input id="ta_attack" type="number" required></label>
+      <label>limitUse <input id="ta_limit" type="number" required></label>
+      <button type="submit">Apprendre</button>
+    </form>
+    <div class="result" id="resTeachAttack"></div>
+  </div>
+</body>
+</html>

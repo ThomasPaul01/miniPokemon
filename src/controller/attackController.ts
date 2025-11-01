@@ -2,9 +2,9 @@ import {createNewAttack, listAllAttacks} from "../services/attackService";
 import { Request, Response } from "express";
 
 export const createAttack = async (req: Request, res: Response) => {
-    const { name, damage, limitUse, pokemonId } = req.body;
+    const { name, damage, limitUse } = req.body;
     try {
-        const newAttack = await createNewAttack(name, damage, limitUse, pokemonId);
+        const newAttack = await createNewAttack(name, damage, limitUse);
         res.status(201).json(newAttack);
     } catch (error) {
         res.status(500).json({ error: "Failed to create attack" });

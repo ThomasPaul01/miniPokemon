@@ -108,28 +108,40 @@ export const healPokemon = async (pokemonId: number) => {
 export const attackPokemon = async (attackerId: number, defenderId: number) => {
     const client = await pool.connect();
     try {
-        // Récupérer une attaque aléatoire de l'attaquant
+        await client.query('BEGIN');
+        // Récupérer une attaque aléatoire de l'attaquant avec des usages restants
         const attackResult = await client.query(
-            `SELECT a.id, a.damage FROM attacks a
+            `SELECT a.id, a.name, a.damage, pa.remaining_uses FROM attacks a
             JOIN pokemon_attacks pa ON a.id = pa.attack_id
-            WHERE pa.pokemon_id = $1
+            WHERE pa.pokemon_id = $1 AND pa.remaining_uses > 0
             ORDER BY RANDOM() LIMIT 1`,
             [attackerId]
         );
         if (attackResult.rows.length === 0) {
-            throw new Error(`No attacks found for pokemon with id ${attackerId}`);
+            throw new Error(`No available attacks (remaining_uses = 0) for pokemon with id ${attackerId}`);
         }
         const attack = attackResult.rows[0];
+
+        // Décrémenter remaining_uses pour cette attaque
+        await client.query(
+            `UPDATE pokemon_attacks SET remaining_uses = remaining_uses - 1
+             WHERE pokemon_id = $1 AND attack_id = $2`,
+            [attackerId, attack.id]
+        );
+
         // Infliger les dégâts au défenseur
         const defenderResult = await client.query(
             `UPDATE pokemons SET life_points = GREATEST(life_points - $1, 0) WHERE id = $2 RETURNING *`,
             [attack.damage, defenderId]
         );
+
+        await client.query('COMMIT');
         return {
             attack,
             defender: defenderResult.rows[0]
         };
     } catch (error) {
+        await client.query('ROLLBACK');
         throw error;
     } finally {
         client.release();

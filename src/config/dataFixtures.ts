@@ -64,46 +64,46 @@ export const loadFixtures = async () => {
         `);
         console.log('✅ Linked pokemons to trainers');
 
-        // Créer des attaques (catalogue global)
+        // Créer des attaques (catalogue global) - dégâts réduits de 3x pour des combats plus longs
         console.log('⚡ Creating attacks catalog...');
         const attacksResult = await client.query(`
             INSERT INTO attacks (name, damage, limit_use) VALUES
             -- Attaques électriques
-            ('Éclair', 40, 25),
-            ('Tonnerre', 90, 15),
-            ('Cage-Éclair', 20, 20),
+            ('Éclair', 13, 25),
+            ('Tonnerre', 30, 15),
+            ('Cage-Éclair', 7, 20),
             
             -- Attaques plante
-            ('Fouet Lianes', 45, 25),
-            ('Lance-Soleil', 120, 10),
-            ('Poudre Toxik', 30, 35),
+            ('Fouet Lianes', 15, 25),
+            ('Lance-Soleil', 40, 10),
+            ('Poudre Toxik', 10, 35),
             
             -- Attaques feu
-            ('Flammèche', 40, 25),
-            ('Lance-Flammes', 90, 15),
-            ('Crocs Feu', 65, 15),
-            ('Déflagration', 110, 5),
+            ('Flammèche', 13, 25),
+            ('Lance-Flammes', 30, 15),
+            ('Crocs Feu', 22, 15),
+            ('Déflagration', 37, 5),
             
             -- Attaques eau
-            ('Pistolet à O', 40, 25),
-            ('Hydrocanon', 110, 5),
+            ('Pistolet à O', 13, 25),
+            ('Hydrocanon', 37, 5),
             
             -- Attaques normales
-            ('Morsure', 60, 25),
-            ('Plaquage', 85, 15),
-            ('Charge', 40, 35),
+            ('Morsure', 20, 25),
+            ('Plaquage', 28, 15),
+            ('Charge', 13, 35),
             
             -- Attaques psy
-            ('Psyko', 90, 10),
-            ('Fatal-Foudre', 110, 5),
+            ('Psyko', 30, 10),
+            ('Fatal-Foudre', 37, 5),
             
             -- Attaques dragon/vol
-            ('Dracochoc', 85, 10),
-            ('Vol', 90, 15),
+            ('Dracochoc', 28, 10),
+            ('Vol', 30, 15),
             
             -- Attaques spéciales
             ('Repos', 0, 10),
-            ('Ronflement', 50, 15),
+            ('Ronflement', 17, 15),
             ('Trempette', 0, 40)
             
             RETURNING id, name

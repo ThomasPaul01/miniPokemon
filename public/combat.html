@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>miniPokemon - Combat</title>
+  <link rel="stylesheet" href="/public/style.css">
+  <script type="module">
+    import { post, $, hpBar } from '/public/js/api.js';
+    function renderBattle(result) {
+      if (result.error) return `<div style="color:#c00;">Erreur : ${result.error}</div>`;
+      const header = `
+        <div>
+          <div><strong>Trainer 1:</strong> ${result.trainer1Id} — <strong>Pokémon:</strong> ${result.pokemon1Name} (#${result.pokemon1Id})</div>
+          <div><strong>Trainer 2:</strong> ${result.trainer2Id} — <strong>Pokémon:</strong> ${result.pokemon2Name} (#${result.pokemon2Id})</div>
+          <div style="margin-top:6px;"><strong>Gagnant:</strong> Trainer ${result.winnerTrainerId} — ${result.winnerPokemonName} (#${result.winnerPokemonId})</div>
+        </div>
+      `;
+      const rows = (result.log || []).map(t => `
+        <tr>
+          <td>${t.turn}</td>
+          <td>${t.attackerName} (#${t.attackerId})</td>
+          <td>${t.defenderName} (#${t.defenderId})</td>
+          <td>${t.attackName} (#${t.attackId})</td>
+          <td>${t.damage}</td>
+          <td>${t.defenderLifeAfter}${hpBar(t.defenderLifeAfter)}</td>
+        </tr>
+      `).join('');
+      const table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Tour</th>
+              <th>Attaquant</th>
+              <th>Défenseur</th>
+              <th>Attaque</th>
+              <th>Dégâts</th>
+              <th>PV Défenseur</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      return header + table;
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      // Single attack
+      $('#formAttack').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          attackerId: Number($('#atk_attacker').value),
+          defenderId: Number($('#atk_defender').value)
+        };
+        const res = await post('/pokemons/attack', data);
+        $('#resAttack').textContent = JSON.stringify(res, null, 2);
+      };
+      // Random duel
+      $('#formDuel').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          trainer1Id: Number($('#duel_t1').value),
+          trainer2Id: Number($('#duel_t2').value)
+        };
+        const res = await post('/challenge/duel', data);
+        $('#resDuel').innerHTML = renderBattle(res);
+      };
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <button onclick="location.href='/public/index.html'">Accueil</button>
+    <button onclick="location.href='/public/lists.html'">Listes</button>
+    <button onclick="location.href='/public/create.html'">Ajouts</button>
+    <button onclick="location.href='/public/tavern.html'">Taverne</button>
+  </nav>
+  <h1>Combat</h1>
+
+  <div class="card">
+    <h2>Attaque simple</h2>
+    <form id="formAttack">
+      <label>Attaquant (pokemonId) <input id="atk_attacker" type="number" required></label>
+      <label>Défenseur (pokemonId) <input id="atk_defender" type="number" required></label>
+      <button type="submit">Attaquer</button>
+    </form>
+    <div class="result" id="resAttack"></div>
+  </div>
+
+  <div class="card">
+    <h2>Défi aléatoire (Duel)</h2>
+    <form id="formDuel">
+      <label>trainer1Id <input id="duel_t1" type="number" required></label>
+      <label>trainer2Id <input id="duel_t2" type="number" required></label>
+      <button type="submit">Lancer le duel</button>
+    </form>
+    <div class="result" id="resDuel"></div>
+  </div>
+</body>
+</html>
