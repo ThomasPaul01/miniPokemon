@@ -1,78 +1,29 @@
-1. Mini Pokemon
-Créer une API REST en Express + TypeScript, connectée à une base de données (PostgreSQL), permettant de gérer un système de jeu Pokémon simplifié.
-L’objectif est d’appliquer les principes de la programmation orientée objet (POO) à travers des classes, des relations et des interactions entre objets.
+# Mini Pokemon API
 
- 
-Gestion des Pokémon
- 
+## 🚀 Commandes
 
-Chaque Pokémon possède :
+### Lancer le serveur
+```bash
+npm run start
+```
 
-- un nom
-- des points de vie (lifePoint)
-- une liste d’attaques
- 
-Un Pokémon peut :
+### Charger les fixtures (données de test)
+```bash
+npm run db:fixtures
+```
 
-- apprendre une attaque (max 4 attaques, sans doublon)
-- se soigner (restaure ses PV et réinitialise les usages de ses attaques)
-- attaquer un autre Pokémon de façon aléatoire avec l’une de ses attaques disponibles
- 
-Gestion des Attaques
- 
+## 🌐 Route par défaut
 
-Une attaque possède :
+Une fois le serveur lancé, accédez à l'application :
 
-- un nom
-- des dégâts (damage)
-- une limite d’usage (usageLimit)
-- un compteur d’usage qui s’incrémente à chaque utilisation
- 
-Une méthode permet d’afficher ses informations sous forme lisible.
+**http://localhost:3000/public/index.html**
 
- 
+## 📋 Fonctionnalités
 
-Gestion des Dresseurs
- 
-
-Un dresseur possède :
-
-- un nom
-- un niveau (level)
-- une expérience (experience)
-une liste de Pokémon
-
- 
-
-Il peut :
-
- 
-
-- ajouter un Pokémon
-- soigner tous ses Pokémon à la taverne
-- gagner de l’expérience (et augmenter de niveau lorsque l’expérience atteint 10)
- 
-
-Implémentez différentes méthodes de combat :
-
- 
-
-Défi aléatoire :
-Deux dresseurs soignent leurs Pokémon, choisissent un Pokémon aléatoire et combattent jusqu’à ce qu’un des deux perde tous ses PV.
-
- 
-
-Arène 1 :
-100 combats aléatoires successifs — le dresseur avec le plus haut niveau (ou expérience en cas d’égalité) gagne.
-
- 
-
-Défi déterministe :
-Chaque dresseur choisit son Pokémon avec le plus de PV, combat sans taverne.
-
- 
-
-Arène 2 :
-100 combats déterministes consécutifs, arrêt si un dresseur perd tous ses Pokémon.
-
-fixtures: npm run db:fixtures
+- **Listes** : Afficher tous les dresseurs, pokémons et attaques
+- **Créer** : Ajouter de nouveaux dresseurs, pokémons et attaques
+- **Taverne** : Soigner tous les pokémons d'un dresseur (PV + usages d'attaques)
+- **Combat** : 
+  - Attaque simple entre deux pokémons
+  - Duel aléatoire (avec choix du nombre de rounds)
+  - Duel déterministe (le pokémon avec le plus de PV, avec choix du nombre de rounds)
