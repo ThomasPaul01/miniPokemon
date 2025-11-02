@@ -1,19 +1,20 @@
+async function readBody(res) {
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return text; }
+}
+
 export async function post(url, data) {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  let json;
-  try { json = await res.json(); } catch { json = await res.text(); }
-  return json;
+  return await readBody(res);
 }
 
 export async function get(url) {
   const res = await fetch(url);
-  let json;
-  try { json = await res.json(); } catch { json = await res.text(); }
-  return json;
+  return await readBody(res);
 }
 
 export function $(id) {

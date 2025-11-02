@@ -25,6 +25,18 @@ export const createTrainer = async (name: string, level: number, experience: num
     }
 };
 
+export const getTrainerById = async (id: number) => {
+    const client = await pool.connect();
+    try {
+        const result = await client.query('SELECT * FROM trainers WHERE id = $1', [id]);
+        return result.rows[0];
+    } catch (error) {
+        throw error;
+    } finally {
+        client.release();
+    }
+};
+
 //addPokemon pas encore fonctionnel
 export const addPokemonToTrainer = async (trainerId: number, pokemonId: number) => {
     const client = await pool.connect();

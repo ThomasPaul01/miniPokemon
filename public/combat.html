@@ -63,6 +63,17 @@
         const res = await post('/challenge/duel', data);
         $('#resDuel').innerHTML = renderBattle(res);
       };
+
+      // Deterministic duel
+      $('#formDeterministic').onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          trainer1Id: Number($('#det_t1').value),
+          trainer2Id: Number($('#det_t2').value)
+        };
+        const res = await post('/challenge/deterministic', data);
+        $('#resDeterministic').innerHTML = renderBattle(res);
+      };
     });
   </script>
 </head>
@@ -87,12 +98,24 @@
 
   <div class="card">
     <h2>Défi aléatoire (Duel)</h2>
+    <p><em>Pokémons choisis aléatoirement, tous soignés avant le combat</em></p>
     <form id="formDuel">
       <label>trainer1Id <input id="duel_t1" type="number" required></label>
       <label>trainer2Id <input id="duel_t2" type="number" required></label>
       <button type="submit">Lancer le duel</button>
     </form>
     <div class="result" id="resDuel"></div>
+  </div>
+
+  <div class="card">
+    <h2>Défi déterministe</h2>
+    <p><em>Chaque dresseur utilise son Pokémon avec le plus de PV (état actuel, sans soins)</em></p>
+    <form id="formDeterministic">
+      <label>trainer1Id <input id="det_t1" type="number" required></label>
+      <label>trainer2Id <input id="det_t2" type="number" required></label>
+      <button type="submit">Lancer le duel déterministe</button>
+    </form>
+    <div class="result" id="resDeterministic"></div>
   </div>
 </body>
 </html>
