@@ -15,9 +15,7 @@ export const loadFixtures = async () => {
             INSERT INTO trainers (name, level, experience) VALUES
             ('Sacha', 50, 10000),
             ('Ondine', 35, 5000),
-            ('Pierre', 40, 7500),
-            ('Flora', 30, 4000),
-            ('Régis', 45, 8500)
+            ('Pierre', 40, 7500)
             RETURNING id, name
         `);
         console.log(`✅ Created ${trainersResult.rows.length} trainers`);
@@ -27,20 +25,11 @@ export const loadFixtures = async () => {
         const pokemonsResult = await client.query(`
             INSERT INTO pokemons (name, life_points) VALUES
             ('Pikachu', 100),
-            ('Bulbizarre', 120),
-            ('Salamèche', 110),
-            ('Carapuce', 115),
-            ('Chenipan', 80),
-            ('Roucool', 90),
-            ('Rattata', 75),
-            ('Mewtwo', 200),
-            ('Dracaufeu', 180),
-            ('Tortank', 170),
-            ('Florizarre', 165),
-            ('Ronflex', 250),
-            ('Évoli', 105),
-            ('Magicarpe', 50),
-            ('Léviator', 190)
+            ('Bulbizarre', 100),
+            ('Salamèche', 100),
+            ('Carapuce', 100),
+            ('Ronflex', 100),
+            ('Mewtwo', 100)
             RETURNING id, name
         `);
         console.log(`✅ Created ${pokemonsResult.rows.length} pokemons`);
@@ -51,61 +40,27 @@ export const loadFixtures = async () => {
             INSERT INTO trainer_pokemons (trainer_id, pokemon_id) VALUES
             (1, 1),  -- Sacha a Pikachu
             (1, 2),  -- Sacha a Bulbizarre
-            (1, 9),  -- Sacha a Dracaufeu
+            (2, 3),  -- Ondine a Salamèche
             (2, 4),  -- Ondine a Carapuce
-            (2, 10), -- Ondine a Tortank
-            (2, 14), -- Ondine a Magicarpe
-            (3, 6),  -- Pierre a Roucool
-            (3, 12), -- Pierre a Ronflex
-            (4, 11), -- Flora a Florizarre
-            (4, 13), -- Flora a Évoli
-            (5, 8),  -- Régis a Mewtwo
-            (5, 15)  -- Régis a Léviator
+            (3, 5),  -- Pierre a Ronflex
+            (3, 6)   -- Pierre a Mewtwo
         `);
         console.log('✅ Linked pokemons to trainers');
 
-        // Créer des attaques (catalogue global) - dégâts réduits de 3x pour des combats plus longs
+        // Créer des attaques (catalogue global)
         console.log('⚡ Creating attacks catalog...');
         const attacksResult = await client.query(`
             INSERT INTO attacks (name, damage, limit_use) VALUES
-            -- Attaques électriques
-            ('Éclair', 13, 25),
-            ('Tonnerre', 30, 15),
-            ('Cage-Éclair', 7, 20),
-            
-            -- Attaques plante
-            ('Fouet Lianes', 15, 25),
-            ('Lance-Soleil', 40, 10),
-            ('Poudre Toxik', 10, 35),
-            
-            -- Attaques feu
-            ('Flammèche', 13, 25),
-            ('Lance-Flammes', 30, 15),
-            ('Crocs Feu', 22, 15),
-            ('Déflagration', 37, 5),
-            
-            -- Attaques eau
-            ('Pistolet à O', 13, 25),
-            ('Hydrocanon', 37, 5),
-            
-            -- Attaques normales
-            ('Morsure', 20, 25),
-            ('Plaquage', 28, 15),
-            ('Charge', 13, 35),
-            
-            -- Attaques psy
-            ('Psyko', 30, 10),
-            ('Fatal-Foudre', 37, 5),
-            
-            -- Attaques dragon/vol
-            ('Dracochoc', 28, 10),
-            ('Vol', 30, 15),
-            
-            -- Attaques spéciales
-            ('Repos', 0, 10),
-            ('Ronflement', 17, 15),
-            ('Trempette', 0, 40)
-            
+            ('Éclair', 15, 20),
+            ('Tonnerre', 25, 10),
+            ('Fouet Lianes', 15, 20),
+            ('Lance-Soleil', 30, 10),
+            ('Flammèche', 15, 20),
+            ('Lance-Flammes', 25, 10),
+            ('Pistolet à O', 15, 20),
+            ('Hydrocanon', 30, 10),
+            ('Plaquage', 20, 15),
+            ('Psyko', 25, 10)
             RETURNING id, name
         `);
         console.log(`✅ Created ${attacksResult.rows.length} attacks`);
@@ -114,44 +69,35 @@ export const loadFixtures = async () => {
         console.log('🎯 Teaching attacks to pokemons...');
         await client.query(`
             INSERT INTO pokemon_attacks (pokemon_id, attack_id, remaining_uses) VALUES
-            -- Pikachu (pokemon_id = 1) apprend 3 attaques électriques
-            (1, 1, 25),  -- Éclair
-            (1, 2, 15),  -- Tonnerre
-            (1, 3, 20),  -- Cage-Éclair
+            -- Pikachu (pokemon_id = 1) - attaques électriques
+            (1, 1, 20),  -- Éclair
+            (1, 2, 10),  -- Tonnerre
+            (1, 9, 15),  -- Plaquage
             
-            -- Bulbizarre (pokemon_id = 2) apprend 3 attaques plante
-            (2, 4, 25),  -- Fouet Lianes
-            (2, 5, 10),  -- Lance-Soleil
-            (2, 6, 35),  -- Poudre Toxik
+            -- Bulbizarre (pokemon_id = 2) - attaques plante
+            (2, 3, 20),  -- Fouet Lianes
+            (2, 4, 10),  -- Lance-Soleil
+            (2, 9, 15),  -- Plaquage
             
-            -- Salamèche (pokemon_id = 3) apprend 3 attaques feu
-            (3, 7, 25),  -- Flammèche
-            (3, 8, 15),  -- Lance-Flammes
-            (3, 9, 15),  -- Crocs Feu
+            -- Salamèche (pokemon_id = 3) - attaques feu
+            (3, 5, 20),  -- Flammèche
+            (3, 6, 10),  -- Lance-Flammes
+            (3, 9, 15),  -- Plaquage
             
-            -- Carapuce (pokemon_id = 4) apprend 3 attaques eau/normal
-            (4, 11, 25), -- Pistolet à O
-            (4, 12, 5),  -- Hydrocanon
-            (4, 13, 25), -- Morsure
+            -- Carapuce (pokemon_id = 4) - attaques eau
+            (4, 7, 20),  -- Pistolet à O
+            (4, 8, 10),  -- Hydrocanon
+            (4, 9, 15),  -- Plaquage
             
-            -- Mewtwo (pokemon_id = 8) apprend 3 attaques puissantes
-            (8, 16, 10), -- Psyko
-            (8, 10, 5),  -- Déflagration
-            (8, 17, 5),  -- Fatal-Foudre
+            -- Ronflex (pokemon_id = 5) - attaques normales
+            (5, 9, 15),  -- Plaquage
+            (5, 1, 20),  -- Éclair
+            (5, 7, 20),  -- Pistolet à O
             
-            -- Dracaufeu (pokemon_id = 9) apprend 3 attaques feu/vol
-            (9, 18, 10), -- Dracochoc
-            (9, 10, 5),  -- Déflagration
-            (9, 19, 15), -- Vol
-            
-            -- Ronflex (pokemon_id = 12) apprend 3 attaques
-            (12, 14, 15), -- Plaquage
-            (12, 20, 10), -- Repos
-            (12, 21, 15), -- Ronflement
-            
-            -- Magicarpe (pokemon_id = 14) apprend 2 attaques
-            (14, 22, 40), -- Trempette
-            (14, 15, 35)  -- Charge
+            -- Mewtwo (pokemon_id = 6) - attaques psy
+            (6, 10, 10), -- Psyko
+            (6, 2, 10),  -- Tonnerre
+            (6, 4, 10)   -- Lance-Soleil
         `);
         console.log('✅ Taught attacks to pokemons');
 
@@ -162,7 +108,8 @@ export const loadFixtures = async () => {
         console.log(`   - ${trainersResult.rows.length} trainers`);
         console.log(`   - ${pokemonsResult.rows.length} pokemons`);
         console.log(`   - ${attacksResult.rows.length} attacks`);
-        console.log(`   - 12 trainer-pokemon relationships\n`);
+        console.log(`   - 6 trainer-pokemon relationships`);
+        console.log(`   - All pokemons have 3 attacks each\n`);
 
     } catch (error) {
         await client.query('ROLLBACK');

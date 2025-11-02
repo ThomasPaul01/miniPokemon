@@ -94,3 +94,21 @@ export const getTrainerPokemons = async (trainerId: number) => {
         client.release();
     }
 };
+
+export const addExperienceToTrainer = async (trainerId: number, expGain: number) => {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            `UPDATE trainers 
+             SET experience = experience + $2 
+             WHERE id = $1 
+             RETURNING *`,
+            [trainerId, expGain]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw error;
+    } finally {
+        client.release();
+    }
+};
