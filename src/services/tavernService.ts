@@ -1,4 +1,4 @@
-import { getPokemonsByTrainerId, healPokemon } from "../repositories/pokemonRepository";
+import { getPokemonsByTrainerId, healPokemon } from '../repositories/pokemonRepository';
 
 export interface HealSummaryItem {
   id: number;
@@ -13,7 +13,7 @@ export interface HealSummary {
 }
 
 export const healAllForTrainer = async (trainerId: number): Promise<HealSummary> => {
-  if (!trainerId) throw new Error("trainerId is required");
+  if (!trainerId) throw new Error('trainerId is required');
 
   const pokemons = await getPokemonsByTrainerId(trainerId);
   if (!pokemons.length) {
@@ -25,6 +25,6 @@ export const healAllForTrainer = async (trainerId: number): Promise<HealSummary>
   return {
     trainerId,
     count: pokemons.length,
-    pokemons: pokemons.map((p: any) => ({ id: p.id, name: p.name, healed: true }))
+    pokemons: pokemons.map((p: any) => ({ id: p.id, name: p.name, healed: true })),
   };
 };

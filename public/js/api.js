@@ -1,13 +1,17 @@
 async function readBody(res) {
   const text = await res.text();
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 export async function post(url, data) {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return await readBody(res);
 }
@@ -24,7 +28,9 @@ export function $(id) {
 
 export function formatObject(obj) {
   if (!obj || typeof obj !== 'object') return String(obj);
-  return Object.entries(obj).map(([k, v]) => `${k} : ${JSON.stringify(v)}`).join('\n');
+  return Object.entries(obj)
+    .map(([k, v]) => `${k} : ${JSON.stringify(v)}`)
+    .join('\n');
 }
 
 export function formatResult(result) {
@@ -37,8 +43,10 @@ export function formatResult(result) {
 export function renderTable(items) {
   if (!Array.isArray(items) || items.length === 0) return '<em>Aucune donnée</em>';
   const keys = Object.keys(items[0]);
-  const header = keys.map(k => `<th>${k}</th>`).join('');
-  const rows = items.map(it => `<tr>${keys.map(k => `<td>${escapeHtml(String(it[k]))}</td>`).join('')}</tr>`).join('');
+  const header = keys.map((k) => `<th>${k}</th>`).join('');
+  const rows = items
+    .map((it) => `<tr>${keys.map((k) => `<td>${escapeHtml(String(it[k]))}</td>`).join('')}</tr>`)
+    .join('');
   return `<table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 

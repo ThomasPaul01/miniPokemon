@@ -1,28 +1,30 @@
 import pool from './database';
 
 export const loadFixtures = async () => {
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
 
-        // Nettoyer les données existantes
-        console.log('🧹 Cleaning existing data...');
-        await client.query('TRUNCATE TABLE pokemon_attacks, attacks, trainer_pokemons, pokemons, trainers RESTART IDENTITY CASCADE');
+    // Nettoyer les données existantes
+    console.log('🧹 Cleaning existing data...');
+    await client.query(
+      'TRUNCATE TABLE pokemon_attacks, attacks, trainer_pokemons, pokemons, trainers RESTART IDENTITY CASCADE',
+    );
 
-        // Créer des trainers
-        console.log('👤 Creating trainers...');
-        const trainersResult = await client.query(`
+    // Créer des trainers
+    console.log('👤 Creating trainers...');
+    const trainersResult = await client.query(`
             INSERT INTO trainers (name, level, experience) VALUES
             ('Sacha', 50, 10000),
             ('Ondine', 35, 5000),
             ('Pierre', 40, 7500)
             RETURNING id, name
         `);
-        console.log(`✅ Created ${trainersResult.rows.length} trainers`);
+    console.log(`✅ Created ${trainersResult.rows.length} trainers`);
 
-        // Créer des pokémons
-        console.log('🔴 Creating pokemons...');
-        const pokemonsResult = await client.query(`
+    // Créer des pokémons
+    console.log('🔴 Creating pokemons...');
+    const pokemonsResult = await client.query(`
             INSERT INTO pokemons (name, life_points) VALUES
             ('Pikachu', 100),
             ('Bulbizarre', 100),
@@ -32,11 +34,11 @@ export const loadFixtures = async () => {
             ('Mewtwo', 100)
             RETURNING id, name
         `);
-        console.log(`✅ Created ${pokemonsResult.rows.length} pokemons`);
+    console.log(`✅ Created ${pokemonsResult.rows.length} pokemons`);
 
-        // Associer des pokémons aux trainers
-        console.log('🔗 Linking pokemons to trainers...');
-        await client.query(`
+    // Associer des pokémons aux trainers
+    console.log('🔗 Linking pokemons to trainers...');
+    await client.query(`
             INSERT INTO trainer_pokemons (trainer_id, pokemon_id) VALUES
             (1, 1),  -- Sacha a Pikachu
             (1, 2),  -- Sacha a Bulbizarre
@@ -45,11 +47,11 @@ export const loadFixtures = async () => {
             (3, 5),  -- Pierre a Ronflex
             (3, 6)   -- Pierre a Mewtwo
         `);
-        console.log('✅ Linked pokemons to trainers');
+    console.log('✅ Linked pokemons to trainers');
 
-        // Créer des attaques (catalogue global)
-        console.log('⚡ Creating attacks catalog...');
-        const attacksResult = await client.query(`
+    // Créer des attaques (catalogue global)
+    console.log('⚡ Creating attacks catalog...');
+    const attacksResult = await client.query(`
             INSERT INTO attacks (name, damage, limit_use) VALUES
             ('Éclair', 15, 20),
             ('Tonnerre', 25, 10),
@@ -63,11 +65,11 @@ export const loadFixtures = async () => {
             ('Psyko', 25, 10)
             RETURNING id, name
         `);
-        console.log(`✅ Created ${attacksResult.rows.length} attacks`);
-        
-        // Associer les attaques aux pokémons via pokemon_attacks
-        console.log('🎯 Teaching attacks to pokemons...');
-        await client.query(`
+    console.log(`✅ Created ${attacksResult.rows.length} attacks`);
+
+    // Associer les attaques aux pokémons via pokemon_attacks
+    console.log('🎯 Teaching attacks to pokemons...');
+    await client.query(`
             INSERT INTO pokemon_attacks (pokemon_id, attack_id, remaining_uses) VALUES
             -- Pikachu (pokemon_id = 1) - attaques électriques
             (1, 1, 20),  -- Éclair
@@ -99,39 +101,38 @@ export const loadFixtures = async () => {
             (6, 2, 10),  -- Tonnerre
             (6, 4, 10)   -- Lance-Soleil
         `);
-        console.log('✅ Taught attacks to pokemons');
+    console.log('✅ Taught attacks to pokemons');
 
-        await client.query('COMMIT');
-        
-        console.log('\n🎉 Fixtures loaded successfully!\n');
-        console.log('📊 Summary:');
-        console.log(`   - ${trainersResult.rows.length} trainers`);
-        console.log(`   - ${pokemonsResult.rows.length} pokemons`);
-        console.log(`   - ${attacksResult.rows.length} attacks`);
-        console.log(`   - 6 trainer-pokemon relationships`);
-        console.log(`   - All pokemons have 3 attacks each\n`);
+    await client.query('COMMIT');
 
-    } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('❌ Error loading fixtures:', error);
-        throw error;
-    } finally {
-        client.release();
-    }
+    console.log('\n🎉 Fixtures loaded successfully!\n');
+    console.log('📊 Summary:');
+    console.log(`   - ${trainersResult.rows.length} trainers`);
+    console.log(`   - ${pokemonsResult.rows.length} pokemons`);
+    console.log(`   - ${attacksResult.rows.length} attacks`);
+    console.log(`   - 6 trainer-pokemon relationships`);
+    console.log(`   - All pokemons have 3 attacks each\n`);
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('❌ Error loading fixtures:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 // Si le fichier est exécuté directement
 if (require.main === module) {
-    import('dotenv').then(dotenv => {
-        dotenv.config();
-        loadFixtures()
-            .then(() => {
-                console.log('✅ Done!');
-                process.exit(0);
-            })
-            .catch((error) => {
-                console.error('❌ Failed:', error);
-                process.exit(1);
-            });
-    });
+  import('dotenv').then((dotenv) => {
+    dotenv.config();
+    loadFixtures()
+      .then(() => {
+        console.log('✅ Done!');
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error('❌ Failed:', error);
+        process.exit(1);
+      });
+  });
 }

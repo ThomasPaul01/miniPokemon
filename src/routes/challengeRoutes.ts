@@ -1,5 +1,5 @@
-import express from 'express'
-import { startRandomDuel, startDeterministicDuel } from '../controller/challengeController.ts'
+import express from 'express';
+import { startRandomDuel, startDeterministicDuel } from '../controller/challengeController.ts';
 
 const router = express.Router();
 

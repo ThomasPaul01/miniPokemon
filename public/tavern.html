@@ -1,46 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>miniPokemon - Taverne</title>
-  <link rel="stylesheet" href="/public/style.css">
-  <script type="module">
-    import { post, $, formatResult } from '/public/js/api.js';
-    window.addEventListener('DOMContentLoaded', () => {
-      $('#formTavern').onsubmit = async e => {
-        e.preventDefault();
-        const data = { trainerId: Number($('#tv_trainer').value) };
-        const res = await post('/tavern/heal', data);
-        if (res.error) {
-          $('#resTavern').textContent = 'Erreur : ' + res.error;
-        } else {
-          const lines = [
-            `Trainer ${res.trainerId} — ${res.count} pokémon(s) soignés`,
-            ...res.pokemons.map(p => `#${p.id} ${p.name} : ${p.healed ? 'OK' : 'KO'}`)
-          ];
-          $('#resTavern').textContent = lines.join('\n');
-        }
-      };
-    });
-  </script>
-</head>
-<body>
-  <nav>
-    <button onclick="location.href='/public/index.html'">Accueil</button>
-    <button onclick="location.href='/public/lists.html'">Listes</button>
-    <button onclick="location.href='/public/create.html'">Ajouts</button>
-    <button onclick="location.href='/public/combat.html'">Combat</button>
-  </nav>
-  <h1>Taverne</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>miniPokemon - Taverne</title>
+    <link rel="stylesheet" href="/public/style.css" />
+    <script type="module">
+      import { post, $, formatResult } from '/public/js/api.js';
+      window.addEventListener('DOMContentLoaded', () => {
+        $('#formTavern').onsubmit = async (e) => {
+          e.preventDefault();
+          const data = { trainerId: Number($('#tv_trainer').value) };
+          const res = await post('/tavern/heal', data);
+          if (res.error) {
+            $('#resTavern').textContent = 'Erreur : ' + res.error;
+          } else {
+            const lines = [
+              `Trainer ${res.trainerId} — ${res.count} pokémon(s) soignés`,
+              ...res.pokemons.map((p) => `#${p.id} ${p.name} : ${p.healed ? 'OK' : 'KO'}`),
+            ];
+            $('#resTavern').textContent = lines.join('\n');
+          }
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <nav>
+      <button onclick="location.href='/public/index.html'">Accueil</button>
+      <button onclick="location.href='/public/lists.html'">Listes</button>
+      <button onclick="location.href='/public/create.html'">Ajouts</button>
+      <button onclick="location.href='/public/combat.html'">Combat</button>
+    </nav>
+    <h1>Taverne</h1>
 
-  <div class="card">
-    <h2>Soigner tous les Pokémons d'un Trainer</h2>
-    <p><em>Cette action restaure les PV à 100 et réinitialise le nombre d'usages de chaque attaque.</em></p>
-    <form id="formTavern">
-      <label>trainerId <input id="tv_trainer" type="number" required></label>
-      <button type="submit">Soigner tout le monde</button>
-    </form>
-    <div class="result" id="resTavern"></div>
-  </div>
-</body>
+    <div class="card">
+      <h2>Soigner tous les Pokémons d'un Trainer</h2>
+      <p>
+        <em
+          >Cette action restaure les PV à 100 et réinitialise le nombre d'usages de chaque
+          attaque.</em
+        >
+      </p>
+      <form id="formTavern">
+        <label>trainerId <input id="tv_trainer" type="number" required /></label>
+        <button type="submit">Soigner tout le monde</button>
+      </form>
+      <div class="result" id="resTavern"></div>
+    </div>
+  </body>
 </html>

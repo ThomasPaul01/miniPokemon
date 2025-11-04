@@ -1,4 +1,4 @@
-import express from 'express'
+import express from 'express';
 import { createAttack, getAllAttacks } from '../controller/attackController';
 const router = express.Router();
 router.get('/getAll', getAllAttacks);

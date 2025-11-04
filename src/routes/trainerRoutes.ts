@@ -1,6 +1,10 @@
-import express from 'express'
+import express from 'express';
 
-import { createTrainer, getAllTrainers, addPokemonToTrainer } from '../controller/trainerController';
+import {
+  createTrainer,
+  getAllTrainers,
+  addPokemonToTrainer,
+} from '../controller/trainerController';
 const router = express.Router();
 router.get('/getAll', getAllTrainers);
 router.post('/create', createTrainer);

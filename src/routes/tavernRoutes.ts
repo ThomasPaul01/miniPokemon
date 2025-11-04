@@ -1,5 +1,5 @@
-import express from 'express'
-import { healTrainerPokemons } from '../controller/tavernController'
+import express from 'express';
+import { healTrainerPokemons } from '../controller/tavernController';
 
 const router = express.Router();
 

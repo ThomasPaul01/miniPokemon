@@ -1,5 +1,9 @@
-import { getPokemonsByTrainerId, healPokemon, attackPokemon } from "../repositories/pokemonRepository";
-import { addExperienceToTrainer } from "../repositories/trainerRepository";
+import {
+  getPokemonsByTrainerId,
+  healPokemon,
+  attackPokemon,
+} from '../repositories/pokemonRepository';
+import { addExperienceToTrainer } from '../repositories/trainerRepository';
 
 export interface BattleTurn {
   turn: number;
@@ -39,7 +43,7 @@ export interface MultiBattleResult {
 
 export const randomDuel = async (trainer1Id: number, trainer2Id: number): Promise<BattleResult> => {
   if (!trainer1Id || !trainer2Id) {
-    throw new Error("trainer1Id and trainer2Id are required");
+    throw new Error('trainer1Id and trainer2Id are required');
   }
 
   // Récupérer les pokémons des deux dresseurs
@@ -121,9 +125,12 @@ export const randomDuel = async (trainer1Id: number, trainer2Id: number): Promis
   };
 };
 
-export const deterministicDuel = async (trainer1Id: number, trainer2Id: number): Promise<BattleResult> => {
+export const deterministicDuel = async (
+  trainer1Id: number,
+  trainer2Id: number,
+): Promise<BattleResult> => {
   if (!trainer1Id || !trainer2Id) {
-    throw new Error("trainer1Id and trainer2Id are required");
+    throw new Error('trainer1Id and trainer2Id are required');
   }
 
   // Récupérer les pokémons des deux dresseurs
@@ -134,11 +141,11 @@ export const deterministicDuel = async (trainer1Id: number, trainer2Id: number):
   if (!pokemons2.length) throw new Error(`Trainer ${trainer2Id} has no pokemons`);
 
   // Choisir le pokémon avec le plus de PV pour chaque dresseur (SANS SOIGNER)
-  const pokemon1 = pokemons1.reduce((best: any, current: any) => 
-    current.life_points > best.life_points ? current : best
+  const pokemon1 = pokemons1.reduce((best: any, current: any) =>
+    current.life_points > best.life_points ? current : best,
   );
-  const pokemon2 = pokemons2.reduce((best: any, current: any) => 
-    current.life_points > best.life_points ? current : best
+  const pokemon2 = pokemons2.reduce((best: any, current: any) =>
+    current.life_points > best.life_points ? current : best,
   );
 
   let attacker = { trainerId: trainer1Id, pokemonId: pokemon1.id };
@@ -207,7 +214,7 @@ export const deterministicDuel = async (trainer1Id: number, trainer2Id: number):
 export const randomDuelRounds = async (
   trainer1Id: number,
   trainer2Id: number,
-  rounds: number
+  rounds: number,
 ): Promise<MultiBattleResult> => {
   const battles: BattleResult[] = [];
   let wins1 = 0;
@@ -250,26 +257,36 @@ export const randomDuelRounds = async (
         damage,
         defenderLifeAfter: defenderAfter,
       });
-      if (defender.pokemonId === pokemon1.id) life1 = defenderAfter; else life2 = defenderAfter;
+      if (defender.pokemonId === pokemon1.id) life1 = defenderAfter;
+      else life2 = defenderAfter;
       if (defenderAfter <= 0) {
         // Pokemon mort : donner 50 XP au trainer gagnant
         await addExperienceToTrainer(attacker.trainerId, 50);
         break;
       }
-      const tmp = attacker; attacker = defender; defender = tmp; turn += 1;
+      const tmp = attacker;
+      attacker = defender;
+      defender = tmp;
+      turn += 1;
     }
 
     const winnerIs1 = life1 > 0;
     const winnerTrainerId = winnerIs1 ? trainer1Id : trainer2Id;
     const winnerPokemonId = winnerIs1 ? pokemon1.id : pokemon2.id;
     const winnerPokemonName = winnerIs1 ? pokemon1.name : pokemon2.name;
-    if (winnerIs1) wins1++; else wins2++;
+    if (winnerIs1) wins1++;
+    else wins2++;
 
     battles.push({
-      trainer1Id, trainer2Id,
-      pokemon1Id: pokemon1.id, pokemon2Id: pokemon2.id,
-      pokemon1Name: pokemon1.name, pokemon2Name: pokemon2.name,
-      winnerTrainerId, winnerPokemonId, winnerPokemonName,
+      trainer1Id,
+      trainer2Id,
+      pokemon1Id: pokemon1.id,
+      pokemon2Id: pokemon2.id,
+      pokemon1Name: pokemon1.name,
+      pokemon2Name: pokemon2.name,
+      winnerTrainerId,
+      winnerPokemonId,
+      winnerPokemonName,
       log,
     });
   }
@@ -280,7 +297,7 @@ export const randomDuelRounds = async (
 export const deterministicDuelRounds = async (
   trainer1Id: number,
   trainer2Id: number,
-  rounds: number
+  rounds: number,
 ): Promise<MultiBattleResult> => {
   const battles: BattleResult[] = [];
   let wins1 = 0;
@@ -323,26 +340,36 @@ export const deterministicDuelRounds = async (
         damage,
         defenderLifeAfter: defenderAfter,
       });
-      if (defender.pokemonId === pokemon1.id) life1 = defenderAfter; else life2 = defenderAfter;
+      if (defender.pokemonId === pokemon1.id) life1 = defenderAfter;
+      else life2 = defenderAfter;
       if (defenderAfter <= 0) {
         // Pokemon mort : donner 50 XP au trainer gagnant
         await addExperienceToTrainer(attacker.trainerId, 50);
         break;
       }
-      const tmp = attacker; attacker = defender; defender = tmp; turn += 1;
+      const tmp = attacker;
+      attacker = defender;
+      defender = tmp;
+      turn += 1;
     }
 
     const winnerIs1 = life1 > 0;
     const winnerTrainerId = winnerIs1 ? trainer1Id : trainer2Id;
     const winnerPokemonId = winnerIs1 ? pokemon1.id : pokemon2.id;
     const winnerPokemonName = winnerIs1 ? pokemon1.name : pokemon2.name;
-    if (winnerIs1) wins1++; else wins2++;
+    if (winnerIs1) wins1++;
+    else wins2++;
 
     battles.push({
-      trainer1Id, trainer2Id,
-      pokemon1Id: pokemon1.id, pokemon2Id: pokemon2.id,
-      pokemon1Name: pokemon1.name, pokemon2Name: pokemon2.name,
-      winnerTrainerId, winnerPokemonId, winnerPokemonName,
+      trainer1Id,
+      trainer2Id,
+      pokemon1Id: pokemon1.id,
+      pokemon2Id: pokemon2.id,
+      pokemon1Name: pokemon1.name,
+      pokemon2Name: pokemon2.name,
+      winnerTrainerId,
+      winnerPokemonId,
+      winnerPokemonName,
       log,
     });
   }
