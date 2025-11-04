@@ -1,3 +1,5 @@
+import Trainer from './Trainer';
+import Attack from './Attack';
 class Pokemon {
     private _name: string;
     private _lifePoints: number;
@@ -31,3 +33,4 @@ class Pokemon {
     }
 
 }
+export default Pokemon;

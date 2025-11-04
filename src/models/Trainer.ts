@@ -1,3 +1,5 @@
+import Pokemon from './Pokemon';
+
 class Trainer {
     private name: string;
     private level: number;
@@ -35,3 +37,4 @@ class Trainer {
     }  
 
 }
+export default Trainer;
